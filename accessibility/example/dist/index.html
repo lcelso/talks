@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <meta
+      name="Talk of Accessibility"
+      content="Luiz Celso de Faria Alves, Acessibilidade Talk"
+    />
+    <title>Acessibilidade</title>
+    <link rel="stylesheet" href="./style.css" />
+    <link rel="stylesheet" type="text/css" href="./icofont.min.css" />
+  </head>
+  <body>
+    <header>
+      <nav aria-label="Main Navigation" id="main-navigation">
+        <ul>
+          <li><a href="">Explorar</a></li>
+          <li><a href="">Sobre mi</a></li>
+          <li class="has-submenu">
+            <a href="" aria-expanded="false" aria-haspopup="true"
+              >Notificaciones</a
+            >
+            <ul>
+              <li><a href="">Teste 1</a></li>
+              <li><a href="">Teste 2</a></li>
+            </ul>
+          </li>
+          <li class="has-submenu">
+            <a href="" aria-expanded="false" aria-haspopup="true">Ajustes</a>
+            <ul>
+              <li><a href="">Teste 1</a></li>
+
+              <li><a href="">Teste 2</a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </header>
+
+    <section role="main">
+      <div class="banner">
+        <img
+          tabindex="-1"
+          src="./assets/meetup-angularsp.jpeg"
+          alt="Personas reunidas al final del Meetup Angular São Paulo - Brasil"
+        />
+
+        <h3>Angular São Paulo - Brasil</h3>
+      </div>
+
+      <form role="search">
+        <div
+          class="error"
+          id="error"
+          aria-hidden="true"
+          role="alert"
+          aria-atomic="true"
+        ></div>
+
+        <ul>
+          <li>
+            Nombre:
+            <input type="text" required name="fname" />
+            <i class="icofont-exclamation-circle"></i>
+          </li>
+          <li>
+            <label for="lastName">Apelido:</label>
+            <input type="text" required id="lastName" name="lname" />
+            <i class="icofont-exclamation-circle"></i>
+          </li>
+          <li>
+            <label>
+              Edad:
+              <input type="date" required name="age" />
+              <i class="icofont-exclamation-circle"></i>
+            </label>
+          </li>
+          <li>
+            <input
+              id="enviar"
+              type="button"
+              aria-expanded="false"
+              aria-controls="error"
+              value="Enviar"
+            />
+          </li>
+        </ul>
+      </form>
+
+      <!-- EXAMPLE BUTTON -->
+      <span
+        id="buttonExpanded"
+        role="button"
+        tabindex="0"
+        aria-expanded="false"
+        aria-controls="content"
+        >Salir
+        <span id="icon" aria-hidden="true"></span>
+      </span>
+
+      <div id="content" aria-hidden="true" role="alert" aria-atomic="true">
+        Posso colocar uma frase bonita aqui!
+      </div>
+    </section>
+
+    <footer>
+      <button onClick="alert('teste')">teste</button>
+    </footer>
+
+    <div class="chaveJS">{ <span></span></div>
+    <div class="chaveJSE">} <span></span></div>
+
+    <div class="bg4"></div>
+    <div class="bg3"></div>
+    <div class="bg2"></div>
+    <div class="bg"></div>
+
+    <script>
+      (function() {
+        // button
+        var button = document.getElementById("buttonExpanded");
+        var content = document.getElementById("content");
+        var error = document.getElementById("error");
+        var input = document.getElementsByTagName("input");
+
+        input[3].addEventListener("click", toogleForm);
+        input[3].addEventListener("keydown", toogleForm);
+
+        function toogleForm() {
+          if (
+            error.getAttribute("aria-hidden") === "true" ||
+            input[3].getAttribute("aria-expanded") === "true"
+          ) {
+            error.setAttribute("aria-hidden", "false");
+            input[3].setAttribute("aria-expanded", "true");
+
+            setErrors();
+          }
+        }
+
+        function setErrors() {
+          let text = "";
+
+          if (input[0].value === "") {
+            text = "<p><i class='icofont-error'></i> nombre esta vacio</p>";
+
+            input[0].parentNode.classList.add("error");
+          }
+
+          if (input[1].value === "") {
+            text += "<p><i class='icofont-error'></i> apelido esta vacio</p>";
+
+            input[1].parentNode.classList.add("error");
+          }
+
+          if (input[2].value === "") {
+            text += "<p><i class='icofont-error'></i> edad esta vacio</p>";
+            input[2].parentNode.classList.add("error");
+          }
+
+          Array.prototype.forEach.call(input, function(item) {
+            if (item.value !== "") {
+              item.parentNode.classList.remove("error");
+            }
+          });
+
+          error.innerHTML = text;
+        }
+
+        button.addEventListener("click", toggleButton);
+        button.addEventListener("keydown", toggleButton);
+
+        function toggleButton($event) {
+          var type = $event.type;
+
+          if (content.getAttribute("aria-hidden") === "true") {
+            content.setAttribute("aria-hidden", "false");
+            button.setAttribute("aria-expanded", "true");
+          } else {
+            content.setAttribute("aria-hidden", "true");
+            button.setAttribute("aria-expanded", "false");
+          }
+
+          if (
+            type === "keydown" &&
+            $event.keyCode !== 13 &&
+            $event.keyCode !== 32
+          ) {
+            return true;
+          }
+
+          $event.preventDefault();
+        }
+
+        // Menu
+        let menuItems1 = document.querySelectorAll(
+          "#main-navigation li.has-submenu"
+        );
+        let timer1, timer2;
+
+        Array.prototype.forEach.call(menuItems1, function(el, i) {
+          el.addEventListener("mouseover", function(event) {
+            this.className = "has-submenu open";
+            clearTimeout(timer1);
+          });
+
+          el.addEventListener("mouseout", function(event) {
+            timer1 = setTimeout(function(event) {
+              var opennav = document.querySelectorAll(
+                "#main-navigation .has-submenu.open"
+              );
+
+              opennav.forEach(function(el) {
+                el.className = "has-submenu";
+                el.querySelector("a").setAttribute("aria-expanded", "false");
+              });
+            }, 100);
+          });
+
+          el.querySelector("a").addEventListener("click", function(event) {
+            if (this.parentNode.className == "has-submenu") {
+              this.parentNode.className = "has-submenu open";
+              this.setAttribute("aria-expanded", "true");
+            } else {
+              this.parentNode.className = "has-submenu";
+              this.setAttribute("aria-expanded", "false");
+            }
+            event.preventDefault();
+          });
+
+          var links = el.querySelectorAll("a");
+          Array.prototype.forEach.call(links, function(el, i) {
+            el.addEventListener("focus", function() {
+              if (el.getAttribute("aria-expanded") == "false") {
+                var opennav = document.querySelectorAll(".has-submenu.open");
+                Array.prototype.forEach.call(opennav, function(el, i) {
+                  el.className = "has-submenu";
+                  el.querySelector("a").setAttribute("aria-expanded", "false");
+                });
+              }
+
+              if (timer2) {
+                clearTimeout(timer2);
+                timer2 = null;
+              }
+            });
+
+            el.addEventListener("blur", function(event) {
+              timer2 = setTimeout(function() {
+                var opennav = document.querySelectorAll(".has-submenu.open");
+
+                if (opennav) {
+                  Array.prototype.forEach.call(opennav, function(el, i) {
+                    el.className = "has-submenu";
+                    el.querySelector("a").setAttribute(
+                      "aria-expanded",
+                      "false"
+                    );
+                  });
+                }
+              }, 10);
+            });
+          });
+        });
+      })();
+    </script>
+  </body>
+</html>
